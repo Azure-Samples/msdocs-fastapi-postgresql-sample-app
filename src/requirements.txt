@@ -1,0 +1,4 @@
+# global requirements
+gunicorn==22.0.0
+uvicorn==0.23.2
+

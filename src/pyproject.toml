@@ -1,0 +1,17 @@
+[project]
+name = "fastapi_app"
+version = "1.0.0"
+description = "Create a relecloud demo application with fastapi and postgres-flexible"
+dependencies = [
+    "azure-monitor-opentelemetry",
+    "fastapi",
+    "jinja2",
+    "uvicorn[standard]",
+    "python-multipart",
+    "psycopg2",
+    "sqlmodel",
+]
+
+[build-system]
+requires = ["flit_core<4"]
+build-backend = "flit_core.buildapi"

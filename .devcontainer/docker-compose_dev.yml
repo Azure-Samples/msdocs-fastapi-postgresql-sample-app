@@ -1,0 +1,42 @@
+version: '3'
+services:
+  db:
+    image: postgres:14
+
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: relecloud
+      POSTGRES_PASSWORD: postgres
+
+    restart: unless-stopped
+
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d relecloud"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: ..
+      dockerfile: ./.devcontainer/Dockerfile_dev
+    depends_on:
+      db:
+        condition: service_healthy
+    network_mode: service:db
+    environment:
+      POSTGRES_USERNAME: postgres
+      POSTGRES_DATABASE: relecloud
+      POSTGRES_HOST: db
+      POSTGRES_PASSWORD: postgres
+
+    command: sleep infinity
+
+    volumes:
+      - ..:/workspace:cached
+
+volumes:
+  postgres-data:

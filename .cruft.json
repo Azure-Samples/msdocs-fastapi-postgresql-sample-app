@@ -1,0 +1,33 @@
+{
+  "template": "https://github.com/Azure-Samples/Azure-Python-Standardization-Template-Generator",
+  "commit": "619a6b29afba8ca26c528526bc313294d5c414a4",
+  "checkout": null,
+  "context": {
+    "cookiecutter": {
+      "project_name": "azure",
+      "python_version": "3.12",
+      "project_backend": "fastapi",
+      "db_resource": "postgres-flexible",
+      "project_host": "appservice",
+      "web_port": "8000",
+      "__repo_name": "azure-fastapi-postgres-flexible-appservice",
+      "__src_folder_name": "azure-fastapi-postgres-flexible-appservice",
+      "__project_short_description": "Create a relecloud demo application with fastapi and postgres-flexible",
+      "_copy_without_render": [
+        ".github/workflows/azure-dev.yml",
+        ".github/workflows/cruft.yml",
+        ".github/workflows/devcontainer-ci.yml",
+        ".github/workflows/format.yml"
+      ],
+      "_extensions": [
+        "extensions.GetUrlForBackend"
+      ],
+      "_jinja2_env_vars": {
+        "lstrip_blocks": true,
+        "trim_blocks": true
+      },
+      "_template": "https://github.com/Azure-Samples/Azure-Python-Standardization-Template-Generator"
+    }
+  },
+  "directory": null
+}
