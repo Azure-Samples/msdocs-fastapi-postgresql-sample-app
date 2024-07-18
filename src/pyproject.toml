@@ -1,7 +1,7 @@
 [project]
 name = "fastapi_app"
 version = "1.0.0"
-description = "Create a relecloud demo application with fastapi and postgres-flexible"
+description = "Create a restaurants review app with FastAPI and PostgreSQL"
 dependencies = [
     "azure-monitor-opentelemetry",
     "fastapi",
