@@ -19,16 +19,13 @@ if os.getenv("AZURE_POSTGRESQL_CONNECTIONSTRING"):
     )
 
 else:
-    POSTGRES_USERNAME = os.environ.get("DBUSER")
-    POSTGRES_PASSWORD = os.environ.get("DBPASS")
-    POSTGRES_HOST = os.environ.get("DBHOST")
-    POSTGRES_DATABASE = os.environ.get("DBNAME")
-    POSTGRES_PORT = os.environ.get("DBPORT", 5432)
-    POSTGRES_SSL = os.environ.get("DBSSL")
+    POSTGRES_USERNAME = os.environ.get("POSTGRES_PASSWORD")
+    POSTGRES_PASSWORD = os.environ.get("POSTGRES_PASSWORD")
+    POSTGRES_HOST = os.environ.get("POSTGRES_HOST")
+    POSTGRES_DATABASE = os.environ.get("POSTGRES_DATABASE")
+    POSTGRES_PORT = os.environ.get("POSTGRES_PORT", 5432)
 
     sql_url = f"postgresql://{POSTGRES_USERNAME}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DATABASE}"
-    if POSTGRES_SSL:
-        sql_url = f"{sql_url}?sslmode={POSTGRES_SSL}"
 
 engine = create_engine(sql_url)
 
