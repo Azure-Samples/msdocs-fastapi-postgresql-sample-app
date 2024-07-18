@@ -66,21 +66,6 @@ If you're running the app inside VS Code or GitHub Codespaces, you can use the "
 python3 -m uvicorn fastapi_app:app --reload --port=8000
 ```
 
-## Running tests
-
-1. Install the development requirements:
-
-    ```sh
-    python3 -m pip install -r requirements-dev.txt
-    python3 -m playwright install chromium --with-deps
-    ```
-
-2. Run the tests:
-
-    ```sh
-    python3 -m pytest
-    ```
-
 ## Deployment
 
 This repo is set up for deployment on Azure via Azure App Service.
@@ -110,16 +95,6 @@ Steps for deployment:
     ```shell
     azd deploy
     ```
-
-### CI/CD pipeline
-
-This project includes a Github workflow for deploying the resources to Azure
-on every push to main. That workflow requires several Azure-related authentication secrets
-to be stored as Github action secrets. To set that up, run:
-
-```shell
-azd pipeline config
-```
 
 ## Getting help
 
