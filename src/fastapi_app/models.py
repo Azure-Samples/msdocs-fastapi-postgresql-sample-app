@@ -5,8 +5,8 @@ from datetime import datetime
 from sqlmodel import Field, SQLModel, create_engine
 
 sql_url = ""
-if os.getenv("APPLICATIONINSIGHTS_CONNECTION_STRING"):
-    sql_url = os.getenv("APPLICATIONINSIGHTS_CONNECTION_STRING")
+if os.getenv("AZURE_POSTGRESQL_CONNECTIONSTRING"):
+    sql_url = os.getenv("AZURE_POSTGRESQL_CONNECTIONSTRING")
 else:
     POSTGRES_USERNAME = os.environ.get("DBUSER")
     POSTGRES_PASSWORD = os.environ.get("DBPASS")
