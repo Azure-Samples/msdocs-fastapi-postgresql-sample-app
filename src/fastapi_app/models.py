@@ -1,12 +1,22 @@
 import os
 import typing
 from datetime import datetime
-
+from urllib.parse import quote_plus
 from sqlmodel import Field, SQLModel, create_engine
 
 sql_url = ""
 if os.getenv("AZURE_POSTGRESQL_CONNECTIONSTRING"):
-    sql_url = os.getenv("AZURE_POSTGRESQL_CONNECTIONSTRING")
+    env_connection_string = os.getenv("AZURE_POSTGRESQL_CONNECTIONSTRING")
+
+    # Parse the connection string
+    details = dict(item.split('=') for item in env_connection_string.split())
+
+    # Properly format the URL for SQLAlchemy
+    sql_url = (
+        f"postgresql://{quote_plus(details['user'])}:{quote_plus(details['password'])}"
+        f"@{details['host']}:{details['port']}/{details['dbname']}?sslmode={details['sslmode']}"
+    )
+
 else:
     POSTGRES_USERNAME = os.environ.get("DBUSER")
     POSTGRES_PASSWORD = os.environ.get("DBPASS")
