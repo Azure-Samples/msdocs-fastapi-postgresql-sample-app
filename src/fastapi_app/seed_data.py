@@ -1,6 +1,5 @@
-from sqlmodel import SQLModel
-
 import models
+from sqlmodel import SQLModel
 
 
 def load_from_json():
