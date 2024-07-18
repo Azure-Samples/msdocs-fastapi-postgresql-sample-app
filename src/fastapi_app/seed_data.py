@@ -1,6 +1,6 @@
 from sqlmodel import SQLModel
 
-from fastapi_app import models
+import models
 
 
 def load_from_json():
