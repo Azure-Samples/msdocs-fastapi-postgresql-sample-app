@@ -5,15 +5,11 @@ on:
     branches: [ main ]
     paths-ignore:
       - '**.md'
-      - 'lab/**'
-      - 'assets/**'
 
   pull_request:
     branches: [ main ]
     paths-ignore:
       - '**.md'
-      - 'lab/**'
-      - 'assets/**'
 
 jobs:
     checks-format:

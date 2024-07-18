@@ -240,3 +240,6 @@ Thumbs.db #thumbnail cache on Windows
 
 # Azure Developer CLI
 .azure/
+
+# Azurite stuff
+__azurite_*.json

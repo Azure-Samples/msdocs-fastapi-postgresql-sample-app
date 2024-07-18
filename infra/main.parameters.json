@@ -8,13 +8,11 @@
       "location": {
         "value": "${AZURE_LOCATION}"
       },
-      "principalId": {
-        "value": "${AZURE_PRINCIPAL_ID}"
+      "databasePassword": {
+        "value": "$(secretOrRandomPassword)"
       },
-      "webAppExists": {
-        "value": "${SERVICE_WEB_RESOURCE_EXISTS=false}"
-      },
-      "dbserverPassword": {
-        "value": "$(secretOrRandomPassword ${AZURE_KEY_VAULT_NAME} DBSERVERPASSWORD)"
-      }    }
+      "secretKey": {
+        "value": "$(secretOrRandomPassword)"
+      }
+    }
   }

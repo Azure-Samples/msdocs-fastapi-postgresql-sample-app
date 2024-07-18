@@ -11,8 +11,10 @@
             "module": "uvicorn",
             "args": [
                 "fastapi_app:app",
-                "--reload"
+                "--reload",
+                "--port=8888"
             ],
+            "justMyCode": false
         },
         {
             "name": "Python: Debug Tests",

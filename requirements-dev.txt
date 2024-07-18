@@ -1,16 +1,2 @@
 -r src/requirements.txt
-
-# Cookiecutter Support
-cruft
-pip-tools
-
-# Testing Tools
-pytest
-ephemeral-port-reserve
-pytest-playwright
-coverage
-pytest-cov
-axe-playwright-python
-
-# Linters
 ruff

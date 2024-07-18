@@ -3,13 +3,11 @@ on:
   push:
     branches: 
       - main
-      - cruft/update
     paths:
       - "infra/**"
   pull_request:
     branches: 
       - main
-      - cruft/update
     paths:
       - "infra/**"
   workflow_dispatch:
