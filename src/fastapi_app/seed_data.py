@@ -1,16 +1,14 @@
-import models
 from sqlmodel import SQLModel
 
+from fastapi_app.models import Restaurant, Review, create_db_and_tables, engine
 
-def load_from_json():
-    models.create_db_and_tables()
 
 def drop_all():
     # Explicitly remove these tables first to avoid cascade errors
-    SQLModel.metadata.remove(models.Restaurant.__table__)
-    SQLModel.metadata.remove(models.Review.__table__)
-    SQLModel.metadata.drop_all(models.engine)
+    SQLModel.metadata.remove(Restaurant.__table__)
+    SQLModel.metadata.remove(Review.__table__)
+    SQLModel.metadata.drop_all(engine)
 
 
 if __name__ == "__main__":
-    load_from_json()
+    create_db_and_tables()

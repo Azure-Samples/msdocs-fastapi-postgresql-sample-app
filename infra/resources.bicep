@@ -182,15 +182,7 @@ resource web 'Microsoft.Web/sites@2022-03-01' = {
     properties: {
       SCM_DO_BUILD_DURING_DEPLOYMENT: 'true'
       AZURE_POSTGRESQL_CONNECTIONSTRING: 'dbname=${pythonAppDatabase.name} host=${postgresServer.name}.postgres.database.azure.com port=5432 sslmode=require user=${postgresServer.properties.administratorLogin} password=${databasePassword}'
-      POSTGRES_HOST: '${postgresServer.name}.postgres.database.azure.com'
-      POSTGRES_DATABASE: pythonAppDatabase.name
-      POSTGRES_PORT: '5432'
-      POSTGRES_USERNAME: postgresServer.properties.administratorLogin
-      POSTGRES_PASSWORD: databasePassword
-      POSTGRES_SSL: 'require'
       SECRET_KEY: secretKey
-      // FLASK_DEBUG: 'False'
-      //Added for Azure Redis Cache
       AZURE_REDIS_CONNECTIONSTRING: 'rediss://:${redisCache.listKeys().primaryKey}@${redisCache.name}.redis.cache.windows.net:6380/0'
     }
   }

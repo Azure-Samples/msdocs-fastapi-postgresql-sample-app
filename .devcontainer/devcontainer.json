@@ -1,11 +1,11 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/docker-existing-docker-compose
 {
-    "name": "azure-fastapi-postgres-flexible-appservice",
+    "name": "msdocs-fastapi-postgresql-sample-app",
 
     // Update the 'dockerComposeFile' list if you have more compose files or use different names.
     // The .devcontainer/docker-compose.yml file contains any overrides you need/want to make.
-    "dockerComposeFile": "docker-compose_dev.yml",
+    "dockerComposeFile": "docker-compose.yml",
     // The 'service' property is the name of the service for the container that VS Code should
     // use. Update this value and .devcontainer/docker-compose.yml to the real service name.
     "service": "app",
@@ -15,6 +15,9 @@
     "portsAttributes": {
         "8000": {"label": "frontend web port", "onAutoForward": "notify"},
         "5432": {"label": "PostgreSQL Port", "onAutoForward": "silent"}
+    },
+    "features": {
+        "ghcr.io/azure/azure-dev/azd:latest": {}
     },
     "customizations": {
         "vscode": {
@@ -29,8 +32,6 @@
                 "python.testing.pytestEnabled": true,
                 "python.testing.unittestEnabled": false,
                 "files.exclude": {
-                    ".coverage": true,
-                    ".pytest_cache": true,
                     "__pycache__": true,
                     ".ruff_cache": true
                 },
@@ -38,16 +39,12 @@
                     "editor.formatOnSave": true,
                     "editor.defaultFormatter": "charliermarsh.ruff",
                     "editor.codeActionsOnSave": {
-                        "source.organizeImports": true,
-                        "source.fixAll": true
+                        "source.organizeImports": "explicit",
+                        "source.fixAll": "explicit"
                     }
                 }
             }
         }
-    },
-    "features": {
-        "ghcr.io/azure/azure-dev/azd:latest": {}
-    },
-    "postCreateCommand": "playwright install chromium --with-deps && pip install -e src &&  python3 src/fastapi_app/seed_data.py"
+    }
 }
 
