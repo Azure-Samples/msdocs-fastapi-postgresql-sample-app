@@ -1,4 +1,3 @@
-from dotenv import load_dotenv
 from sqlmodel import SQLModel
 
 from fastapi_app.models import Restaurant, Review, create_db_and_tables, engine
@@ -12,5 +11,4 @@ def drop_all():
 
 
 if __name__ == "__main__":
-    load_dotenv()
     create_db_and_tables()

@@ -5,7 +5,7 @@
 
     // Update the 'dockerComposeFile' list if you have more compose files or use different names.
     // The .devcontainer/docker-compose.yml file contains any overrides you need/want to make.
-    "dockerComposeFile": "docker-compose_dev.yml",
+    "dockerComposeFile": "docker-compose.yml",
     // The 'service' property is the name of the service for the container that VS Code should
     // use. Update this value and .devcontainer/docker-compose.yml to the real service name.
     "service": "app",
@@ -15,6 +15,9 @@
     "portsAttributes": {
         "8000": {"label": "frontend web port", "onAutoForward": "notify"},
         "5432": {"label": "PostgreSQL Port", "onAutoForward": "silent"}
+    },
+    "features": {
+        "ghcr.io/azure/azure-dev/azd:latest": {}
     },
     "customizations": {
         "vscode": {
@@ -42,10 +45,6 @@
                 }
             }
         }
-    },
-    "features": {
-        "ghcr.io/azure/azure-dev/azd:latest": {}
-    },
-    "postCreateCommand": "pip install -e src &&  python3 src/fastapi_app/seed_data.py"
+    }
 }
 
