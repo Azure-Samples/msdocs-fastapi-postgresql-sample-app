@@ -168,7 +168,7 @@ resource web 'Microsoft.Web/sites@2022-03-01' = {
       alwaysOn: true
       linuxFxVersion: 'PYTHON|3.11'
       ftpsState: 'Disabled'
-      appCommandLine: 'entrypoint.sh'
+      appCommandLine: 'src/entrypoint.sh'
       minTlsVersion: '1.2'
     }
     httpsOnly: true
