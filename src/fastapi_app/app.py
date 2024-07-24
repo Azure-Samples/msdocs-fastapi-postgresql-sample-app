@@ -1,5 +1,5 @@
-import os
 import logging
+import os
 import pathlib
 from datetime import datetime
 
@@ -13,14 +13,14 @@ from sqlmodel import Session, select
 
 from .models import Restaurant, Review, engine
 
-logging.basicConfig(level=logging.DEBUG)
-
+# Setup logger and Azure Monitor:
+logger = logging.getLogger("app")
+logger.setLevel(logging.INFO)
 if os.getenv("APPLICATIONINSIGHTS_CONNECTION_STRING"):
     configure_azure_monitor()
 
-print("Setting up FastAPI app...")
-logging.warning("From logging: Setting up FastAPI app...")
 
+# Setup FastAPI app:
 app = FastAPI()
 parent_path = pathlib.Path(__file__).parent.parent
 app.mount("/mount", StaticFiles(directory=parent_path / "static"), name="static")
@@ -28,6 +28,7 @@ templates = Jinja2Templates(directory=parent_path / "templates")
 templates.env.globals["prod"] = os.environ.get("RUNNING_IN_PRODUCTION", False)
 # Use relative path for url_for, so that it works behind a proxy like Codespaces
 templates.env.globals["url_for"] = app.url_path_for
+
 
 # Dependency to get the database session
 def get_db_session():
@@ -37,8 +38,7 @@ def get_db_session():
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request, session: Session = Depends(get_db_session)):
-    print("root called")
-    logging.warning("From logging: root called")
+    logger.info("root called")
     statement = (
         select(Restaurant, func.avg(Review.rating).label("avg_rating"), func.count(Review.id).label("review_count"))
         .outerjoin(Review, Review.restaurant == Restaurant.id)
@@ -59,7 +59,7 @@ async def index(request: Request, session: Session = Depends(get_db_session)):
 
 @app.get("/create", response_class=HTMLResponse)
 async def create_restaurant(request: Request):
-    print("Request for add restaurant page received")
+    logger.info("Request for add restaurant page received")
     return templates.TemplateResponse("create_restaurant.html", {"request": request})
 
 
@@ -68,7 +68,7 @@ async def add_restaurant(
     request: Request, restaurant_name: str = Form(...), street_address: str = Form(...), description: str = Form(...),
     session: Session = Depends(get_db_session)
 ):
-    print(f"name: {restaurant_name} address: {street_address} description: {description}")
+    logger.info("name: %s address: %s description: %s", restaurant_name, street_address, description)
     restaurant = Restaurant()
     restaurant.name = restaurant_name
     restaurant.street_address = street_address
