@@ -8,6 +8,6 @@ infra:
     provider: "bicep"
 services:
     web:
-        project: src
+        project: .
         language: py
         host: appservice
