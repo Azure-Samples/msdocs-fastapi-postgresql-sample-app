@@ -26,10 +26,7 @@ logconfig_dict = {
         },
     },
     "loggers": {
-        "root": {
-            "level": "INFO",
-            "handlers": ["default"]
-        },
+        "root": {"level": "INFO", "handlers": ["default"]},
         "uvicorn.error": {
             "level": "INFO",
             "handlers": ["default"],
@@ -43,10 +40,11 @@ logconfig_dict = {
     },
 }
 
+
 class MyUvicornWorker(UvicornWorker):
     CONFIG_KWARGS = {
         "loop": "asyncio",
         "http": "auto",
         "lifespan": "off",
-        "log_config": logconfig_dict
+        "log_config": logconfig_dict,
     }
