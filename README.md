@@ -35,7 +35,7 @@ This project has a [dev container configuration](.devcontainer/), which makes it
 
     ```shell
     # Create .env with environment variables
-    cp .env.sample .env
+    cp .env.sample.devcontainer .env
 
     # Install requirements
     python3 -m pip install -r src/requirements.txt
