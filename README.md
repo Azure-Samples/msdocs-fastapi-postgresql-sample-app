@@ -22,41 +22,35 @@ description: This project deploys a restaurant review web application using Fast
 
 This project deploys a web application for a restaurnant review site using FastAPI. The application can be deployed to Azure with Azure App Service using the [Azure Developer CLI](https://learn.microsoft.com/azure/developer/azure-developer-cli/overview).
 
-## Opening the project
 
-This project has [Dev Container support](https://code.visualstudio.com/docs/devcontainers/containers), so it will be setup automatically if you open it in Github Codespaces or in local VS Code with the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers).
+## Run the sample
 
-If you're *not* using one of those options for opening the project, then you'll need to:
+This project has a [dev container configuration](.devcontainer/), which makes it easier to develop apps locally, deploy them to Azure, and monitor them. The easiest way to run this sample application is inside a GitHub codespace. Follow these steps:
 
-1. Start up a local PostgreSQL server, create a database for the app, and set the following environment variables according to your database configuration.
+1. Fork this repository to your account. For instructions, see [Fork a repo](https://docs.github.com/get-started/quickstart/fork-a-repo).
 
-```shell
-export POSTGRES_HOST=localhost
-export POSTGRES_PORT=5432
-export POSTGRES_DATABASE=<YOUR DATABASE>
-export POSTGRES_USERNAME=<YOUR USERNAME>
-export POSTGRES_PASSWORD=<YOUR PASSWORD>
-```
+1. From the repository root of your fork, select **Code** > **Codespaces** > **+**.
 
-1. Create a [Python virtual environment](https://docs.python.org/3/tutorial/venv.html#creating-virtual-environments) and activate it.
+1. In the codespace terminal, run the following commands:
 
-1. Install production requirements:
+    ```shell
+    # Create .env with environment variables
+    cp .env.sample.devcontainer .env
 
-    ```sh
+    # Install requirements
     python3 -m pip install -r src/requirements.txt
-    ```
 
-1. Install the app as an editable package:
-
-    ```sh
+    # Install the app as an editable package
     python3 -m pip install -e src
-    ```
 
-1. Apply database migrations:
-
-    ```sh
+    # Run database migrations
     python3 src/fastapi_app/seed_data.py
+
+    # Start the development server
+    python3 -m uvicorn fastapi_app:app --reload --port=8000
     ```
+
+1. When you see the message `Your application running on port 8000 is available.`, click **Open in Browser**.
 
 ## Running locally
 
@@ -65,21 +59,6 @@ If you're running the app inside VS Code or GitHub Codespaces, you can use the "
 ```sh
 python3 -m uvicorn fastapi_app:app --reload --port=8000
 ```
-
-## Running tests
-
-1. Install the development requirements:
-
-    ```sh
-    python3 -m pip install -r requirements-dev.txt
-    python3 -m playwright install chromium --with-deps
-    ```
-
-2. Run the tests:
-
-    ```sh
-    python3 -m pytest
-    ```
 
 ## Deployment
 
@@ -110,16 +89,6 @@ Steps for deployment:
     ```shell
     azd deploy
     ```
-
-### CI/CD pipeline
-
-This project includes a Github workflow for deploying the resources to Azure
-on every push to main. That workflow requires several Azure-related authentication secrets
-to be stored as Github action secrets. To set that up, run:
-
-```shell
-azd pipeline config
-```
 
 ## Getting help
 
