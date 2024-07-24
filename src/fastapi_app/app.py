@@ -1,4 +1,5 @@
 import os
+import logging
 import pathlib
 from datetime import datetime
 
@@ -12,8 +13,13 @@ from sqlmodel import Session, select
 
 from .models import Restaurant, Review, engine
 
+logging.basicConfig(level=logging.DEBUG)
+
 if os.getenv("APPLICATIONINSIGHTS_CONNECTION_STRING"):
     configure_azure_monitor()
+
+print("Setting up FastAPI app...")
+logging.warning("From logging: Setting up FastAPI app...")
 
 app = FastAPI()
 parent_path = pathlib.Path(__file__).parent.parent
@@ -22,7 +28,6 @@ templates = Jinja2Templates(directory=parent_path / "templates")
 templates.env.globals["prod"] = os.environ.get("RUNNING_IN_PRODUCTION", False)
 # Use relative path for url_for, so that it works behind a proxy like Codespaces
 templates.env.globals["url_for"] = app.url_path_for
-
 
 # Dependency to get the database session
 def get_db_session():
@@ -33,6 +38,7 @@ def get_db_session():
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request, session: Session = Depends(get_db_session)):
     print("root called")
+    logging.warning("From logging: root called")
     statement = (
         select(Restaurant, func.avg(Review.rating).label("avg_rating"), func.count(Review.id).label("review_count"))
         .outerjoin(Review, Review.restaurant == Restaurant.id)
