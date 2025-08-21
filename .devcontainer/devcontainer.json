@@ -25,7 +25,8 @@
                 "ms-azuretools.vscode-bicep",
                 "charliermarsh.ruff",
                 "ms-python.python",
-                "bierner.github-markdown-preview"
+                "bierner.github-markdown-preview",
+                "GitHub.copilot-chat"
             ],
             "settings": {
                 "python.defaultInterpreterPath": "/usr/local/bin/python",
