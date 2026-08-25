@@ -1,6 +1,5 @@
 import logging
 import os
-import typing
 from datetime import datetime
 from urllib.parse import quote_plus
 
@@ -44,7 +43,7 @@ def create_db_and_tables():
     return SQLModel.metadata.create_all(engine)
 
 class Restaurant(SQLModel, table=True):
-    id: typing.Optional[int] = Field(default=None, primary_key=True)
+    id: int | None = Field(default=None, primary_key=True)
     name: str = Field(max_length=50)
     street_address: str = Field(max_length=50)
     description: str = Field(max_length=250)
@@ -53,10 +52,10 @@ class Restaurant(SQLModel, table=True):
         return f"{self.name}"
 
 class Review(SQLModel, table=True):
-    id: typing.Optional[int] = Field(default=None, primary_key=True)
+    id: int | None = Field(default=None, primary_key=True)
     restaurant: int = Field(foreign_key="restaurant.id")
     user_name: str = Field(max_length=50)
-    rating: typing.Optional[int]
+    rating: int | None
     review_text: str = Field(max_length=500)
     review_date: datetime
 
