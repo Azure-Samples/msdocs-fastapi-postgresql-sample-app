@@ -21,7 +21,9 @@ if os.getenv("APPLICATIONINSIGHTS_CONNECTION_STRING"):
 
 
 # Setup FastAPI app:
-app = FastAPI()
+from .mcp_server import mcp, mcp_lifespan
+app = FastAPI(lifespan=mcp_lifespan)
+app.mount("/mcp", mcp.streamable_http_app())
 parent_path = pathlib.Path(__file__).parent.parent
 app.mount("/mount", StaticFiles(directory=parent_path / "static"), name="static")
 templates = Jinja2Templates(directory=parent_path / "templates")
@@ -54,14 +56,20 @@ async def index(request: Request, session: Session = Depends(get_db_session)):
         restaurant_dict["stars_percent"] = round((float(avg_rating) / 5.0) * 100) if review_count > 0 else 0
         restaurants.append(restaurant_dict)
 
-    return templates.TemplateResponse("index.html", {"request": request, "restaurants": restaurants})
-
+    return templates.TemplateResponse(
+        request=request,
+        name="index.html",
+        context={"restaurants": restaurants},
+    )
 
 @app.get("/create", response_class=HTMLResponse)
 async def create_restaurant(request: Request):
     logger.info("Request for add restaurant page received")
-    return templates.TemplateResponse("create_restaurant.html", {"request": request})
-
+    return templates.TemplateResponse(
+        request=request,
+        name="create_restaurant.html",
+        context={"request": request},
+    )
 
 @app.post("/add", response_class=RedirectResponse)
 async def add_restaurant(
@@ -97,9 +105,10 @@ async def details(request: Request, id: int, session: Session = Depends(get_db_s
     restaurant_dict["stars_percent"] = round((float(avg_rating) / 5.0) * 100) if review_count > 0 else 0
 
     return templates.TemplateResponse(
-        "details.html", {"request": request, "restaurant": restaurant_dict, "reviews": reviews}
+        request=request,
+        name="details.html",
+        context={"restaurant": restaurant_dict, "reviews": reviews},
     )
-
 
 @app.post("/review/{id}", response_class=RedirectResponse)
 async def add_review(
@@ -120,3 +129,25 @@ async def add_review(
     session.commit()
 
     return RedirectResponse(url=app.url_path_for("details", id=id), status_code=status.HTTP_303_SEE_OTHER)
+
+@app.post("/delete/{id}", response_class=RedirectResponse)
+async def delete_restaurant(
+    id: int,
+    session: Session = Depends(get_db_session),
+):
+    # 先に Review を削除（外部キー制約回避）
+    reviews = session.exec(select(Review).where(Review.restaurant == id)).all()
+    for review in reviews:
+        session.delete(review)
+
+    # Restaurant を削除
+    restaurant = session.exec(select(Restaurant).where(Restaurant.id == id)).first()
+    if restaurant:
+        session.delete(restaurant)
+
+    session.commit()
+
+    return RedirectResponse(
+        url=app.url_path_for("index"),
+        status_code=status.HTTP_303_SEE_OTHER,
+    )

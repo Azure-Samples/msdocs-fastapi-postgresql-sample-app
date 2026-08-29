@@ -7,6 +7,36 @@
           min-height: 75rem;
           padding-top: 4.5rem;
       }
+
+      .score {
+        display: block;
+        font-size: 16px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .score-wrap {
+        display: inline-block;
+        position: relative;
+        height: 19px;
+      }
+
+      .score .stars-active {
+        color: #EEBD01;
+        position: relative;
+        z-index: 10;
+        display: inline-block;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+
+      .score .stars-inactive {
+        color: grey;
+        position: absolute;
+        top: 0;
+        left: 0;
+        -webkit-text-stroke: initial;
+      }
   </style>
 {% endblock %}
 {% block content %}
@@ -21,7 +51,7 @@
   </div>
   <div class="row">
       <div class="col-md-2 fw-bold">Rating:</div>
-      <div class="col">{% if restaurant.review_count %} {{ restaurant.avg_rating|round(3) }} ({{ restaurant.review_count }} {% if restaurant.review_count == 1 %} review{% else %} reviews{% endif %}) {% else %} No ratings yet {% endif %}</div>                
+      <div class="col">{% include "star_rating.html" %}</div>                
   </div>
 
   <h4 class="mt-5">Reviews</h4>
@@ -31,6 +61,15 @@
           Add new review
       </button>
   </p>
+
+  <form method="POST"
+    action="{{ url_for('delete_restaurant', id=restaurant.id) }}"
+    onsubmit="return confirm('このレストランを削除します。よろしいですか？');">
+
+    <button type="submit" class="btn btn-danger">
+      Delete restaurant
+    </button>
+  </form>
 
 <!-- Button trigger modal -->
     {% if reviews %}
