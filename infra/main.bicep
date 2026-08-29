@@ -18,10 +18,11 @@ param databasePassword string
 param secretKey string
 
 var resourceToken = toLower(uniqueString(subscription().id, name, location))
+var safeName = toLower(replace(name, '_', '-'))
 var tags = { 'azd-env-name': name }
 
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
-  name: '${name}-rg'
+  name: '${safeName}-rg'
   location: location
   tags: tags
 }

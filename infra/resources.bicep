@@ -7,7 +7,7 @@ param databasePassword string
 @secure()
 param secretKey string
 
-var prefix = '${name}-${resourceToken}'
+var prefix = toLower(replace('${name}-${resourceToken}', '_', '-'))
 
 var pgServerName = '${prefix}-postgres-server'
 var databaseSubnetName = 'database-subnet'

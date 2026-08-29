@@ -7,10 +7,11 @@ from azure.monitor.opentelemetry import configure_azure_monitor
 from fastapi import Depends, FastAPI, Form, Request, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
+from jinja2 import Environment, FileSystemLoader, select_autoescape
 from sqlalchemy.sql import func
 from sqlmodel import Session, select
 
+from .mcp_server import mcp, mcp_lifespan
 from .models import Restaurant, Review, engine
 
 # Setup logger and Azure Monitor:
@@ -21,13 +22,19 @@ if os.getenv("APPLICATIONINSIGHTS_CONNECTION_STRING"):
 
 
 # Setup FastAPI app:
-app = FastAPI()
+
 parent_path = pathlib.Path(__file__).parent.parent
-app.mount("/mount", StaticFiles(directory=parent_path / "static"), name="static")
-templates = Jinja2Templates(directory=parent_path / "templates")
-templates.env.globals["prod"] = os.environ.get("RUNNING_IN_PRODUCTION", False)
-# Use relative path for url_for, so that it works behind a proxy like Codespaces
-templates.env.globals["url_for"] = app.url_path_for
+app = FastAPI(lifespan=mcp_lifespan)
+app.mount("/api", mcp.streamable_http_app())
+app.mount("/static", StaticFiles(directory=parent_path / "static"), name="static")
+
+# Create Jinja2 environment with caching disabled to avoid issues
+jinja_env = Environment(
+    loader=FileSystemLoader(parent_path / "templates"),
+    autoescape=select_autoescape(["html", "xml"]),
+    cache_size=0,  # Disable caching to avoid 'unhashable type' error
+)
+jinja_env.globals["prod"] = bool(os.environ.get("RUNNING_IN_PRODUCTION", False))
 
 
 # Dependency to get the database session
@@ -48,25 +55,34 @@ async def index(request: Request, session: Session = Depends(get_db_session)):
 
     restaurants = []
     for restaurant, avg_rating, review_count in results:
-        restaurant_dict = restaurant.dict()
+        restaurant_dict = restaurant.model_dump()
         restaurant_dict["avg_rating"] = avg_rating
         restaurant_dict["review_count"] = review_count
         restaurant_dict["stars_percent"] = round((float(avg_rating) / 5.0) * 100) if review_count > 0 else 0
         restaurants.append(restaurant_dict)
 
-    return templates.TemplateResponse("index.html", {"request": request, "restaurants": restaurants})
+    template = jinja_env.get_template("index.html")
+    context = {"request": request, "restaurants": restaurants, "url_for": app.url_path_for}
+    html_content = template.render(context)
+    return HTMLResponse(content=html_content)
 
 
 @app.get("/create", response_class=HTMLResponse)
 async def create_restaurant(request: Request):
     logger.info("Request for add restaurant page received")
-    return templates.TemplateResponse("create_restaurant.html", {"request": request})
+    template = jinja_env.get_template("create_restaurant.html")
+    context = {"request": request, "url_for": app.url_path_for}
+    html_content = template.render(context)
+    return HTMLResponse(content=html_content)
 
 
 @app.post("/add", response_class=RedirectResponse)
 async def add_restaurant(
-    request: Request, restaurant_name: str = Form(...), street_address: str = Form(...), description: str = Form(...),
-    session: Session = Depends(get_db_session)
+    request: Request,
+    restaurant_name: str = Form(...),
+    street_address: str = Form(...),
+    description: str = Form(...),
+    session: Session = Depends(get_db_session),
 ):
     logger.info("name: %s address: %s description: %s", restaurant_name, street_address, description)
     restaurant = Restaurant()
@@ -91,14 +107,15 @@ async def details(request: Request, id: int, session: Session = Depends(get_db_s
     if review_count > 0:
         avg_rating = sum(review.rating for review in reviews if review.rating is not None) / review_count
 
-    restaurant_dict = restaurant.dict()
+    restaurant_dict = restaurant.model_dump()
     restaurant_dict["avg_rating"] = avg_rating
     restaurant_dict["review_count"] = review_count
     restaurant_dict["stars_percent"] = round((float(avg_rating) / 5.0) * 100) if review_count > 0 else 0
 
-    return templates.TemplateResponse(
-        "details.html", {"request": request, "restaurant": restaurant_dict, "reviews": reviews}
-    )
+    template = jinja_env.get_template("details.html")
+    context = {"request": request, "restaurant": restaurant_dict, "reviews": reviews, "url_for": app.url_path_for}
+    html_content = template.render(context)
+    return HTMLResponse(content=html_content)
 
 
 @app.post("/review/{id}", response_class=RedirectResponse)
@@ -120,3 +137,24 @@ async def add_review(
     session.commit()
 
     return RedirectResponse(url=app.url_path_for("details", id=id), status_code=status.HTTP_303_SEE_OTHER)
+
+
+@app.post("/delete/{id}", response_class=RedirectResponse)
+async def delete_restaurant(
+    request: Request,
+    id: int,
+    session: Session = Depends(get_db_session),
+):
+    restaurant = session.exec(select(Restaurant).where(Restaurant.id == id)).first()
+    if restaurant is None:
+        return RedirectResponse(url=app.url_path_for("index"), status_code=status.HTTP_303_SEE_OTHER)
+
+    reviews = session.exec(select(Review).where(Review.restaurant == id)).all()
+    for review in reviews:
+        session.delete(review)
+    session.commit()
+
+    session.delete(restaurant)
+    session.commit()
+
+    return RedirectResponse(url=app.url_path_for("index"), status_code=status.HTTP_303_SEE_OTHER)

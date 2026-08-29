@@ -243,3 +243,21 @@ Thumbs.db #thumbnail cache on Windows
 
 # Azurite stuff
 __azurite_*.json
+
+# Work/debug artifacts (not for version control)
+*.zip
+azd-deploy-output*.txt
+chat_*.json
+chat-log*.md
+chat_log*.md
+setup_db.py
+entrypoint.sh
+entrypoint_azure.sh
+app-error-logs/
+app-logs/
+app-logs-mcp/
+deploy-flat/
+deploy-logs-extracted/
+latest-logs/
+webapp_logs/
+app-deploy-fixed-temp/
