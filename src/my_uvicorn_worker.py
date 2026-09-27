@@ -45,6 +45,6 @@ class MyUvicornWorker(UvicornWorker):
     CONFIG_KWARGS = {
         "loop": "asyncio",
         "http": "auto",
-        "lifespan": "off",
+        "lifespan": "on",
         "log_config": logconfig_dict,
     }

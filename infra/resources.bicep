@@ -1,5 +1,6 @@
 param name string
 param location string
+param pgLocation string
 param resourceToken string
 param tags object
 @secure()
@@ -299,8 +300,8 @@ module applicationInsightsResources 'appinsights.bicep' = {
   }
 }
 
-resource postgresServer 'Microsoft.DBforPostgreSQL/flexibleServers@2022-01-20-preview' = {
-  location: location
+resource postgresServer 'Microsoft.DBforPostgreSQL/flexibleServers@2023-03-01-preview' = {
+  location: pgLocation
   tags: tags
   name: pgServerName
   sku: {
@@ -308,7 +309,7 @@ resource postgresServer 'Microsoft.DBforPostgreSQL/flexibleServers@2022-01-20-pr
     tier: 'Burstable'
   }
   properties: {
-    version: '12'
+    version: '16'
     administratorLogin: 'postgresadmin'
     administratorLoginPassword: databasePassword
     storage: {
@@ -317,10 +318,6 @@ resource postgresServer 'Microsoft.DBforPostgreSQL/flexibleServers@2022-01-20-pr
     backup: {
       backupRetentionDays: 7
       geoRedundantBackup: 'Disabled'
-    }
-    network: {
-      delegatedSubnetResourceId: virtualNetwork::databaseSubnet.id
-      privateDnsZoneArmResourceId: privateDnsZone.id
     }
     highAvailability: {
       mode: 'Disabled'
@@ -332,13 +329,19 @@ resource postgresServer 'Microsoft.DBforPostgreSQL/flexibleServers@2022-01-20-pr
       startMinute: 0
     }
   }
-
-  dependsOn: [
-    privateDnsZoneLink
-  ]
 }
 
-resource pythonAppDatabase 'Microsoft.DBforPostgreSQL/flexibleServers/databases@2022-01-20-preview' = {
+// Allow Azure services to access PostgreSQL (needed for cross-region App Service)
+resource postgresFirewallRule 'Microsoft.DBforPostgreSQL/flexibleServers/firewallRules@2023-03-01-preview' = {
+  parent: postgresServer
+  name: 'AllowAllAzureServices'
+  properties: {
+    startIpAddress: '0.0.0.0'
+    endIpAddress: '0.0.0.0'
+  }
+}
+
+resource pythonAppDatabase 'Microsoft.DBforPostgreSQL/flexibleServers/databases@2023-03-01-preview' = {
   parent: postgresServer
   name: 'pythonapp'
 }

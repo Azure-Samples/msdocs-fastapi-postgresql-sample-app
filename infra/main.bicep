@@ -9,6 +9,9 @@ param name string
 @description('Primary location for all resources')
 param location string
 
+@description('Location for PostgreSQL Flexible Server (use a region without offer restrictions)')
+param pgLocation string = 'centralus'
+
 @secure()
 @description('PostGreSQL Server administrator password')
 param databasePassword string
@@ -32,6 +35,7 @@ module resources 'resources.bicep' = {
   params: {
     name: name
     location: location
+    pgLocation: pgLocation
     resourceToken: resourceToken
     tags: tags
     databasePassword: databasePassword
